@@ -1,15 +1,22 @@
 import math
+import time
 
 import cv2
 import numpy as np
 
 from modules.hand_detector import HandDetector
-from utils.exceptions import VideoCanNotBeShown
+from common.exceptions import VideoCanNotBeShown
+from common.config import INPUT_DIR
 
 hand_detector = HandDetector(max_hands=1)
 cap = cv2.VideoCapture(0)
 gap = 30
 template_image_size = 300
+
+# Change here for data collection
+letter = "A"
+letter_folder = f"{INPUT_DIR}/{letter}"
+counter_for_letter_number = 0
 
 while True:
     if cap.isOpened():
@@ -55,10 +62,13 @@ while True:
                 ] = resized_hand_image
 
             try:
-                cv2.imshow("hand_image", hand_image)
                 cv2.imshow("template_image", template_image)
             except VideoCanNotBeShown:
                 pass
 
         cv2.imshow("Image", frame)
-        cv2.waitKey(30)
+        key = cv2.waitKey(1)
+        if key == ord("s"):
+            counter_for_letter_number += 1
+            cv2.imwrite(f"{letter_folder}/{time.time()}.jpg", template_image)
+            print(counter_for_letter_number)
